@@ -8,8 +8,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,4 +47,29 @@ public class AccountServiceImpl implements IAccountService {
     public Account findById(int id){
         return iAccountRepo.findById(id);
     }
+
+    public void updateResetPassword(String token, String email) throws AccountNotFoundException {
+        Account account = iAccountRepo.findByEmail(email);
+        if (account != null){
+            account.setResetPasswordToken(token);
+            iAccountRepo.save(account);
+        } else {
+            throw new AccountNotFoundException("Could not find any account with email" + email);
+        }
+    }
+
+    public Account get(String resetPasswordToken){
+        return iAccountRepo.findByResetPasswordToken(resetPasswordToken);
+    }
+
+    public void updatePassword(Account account, String newPassword){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(newPassword);
+
+        account.setPassword(encodedPassword);
+        account.setResetPasswordToken(null);
+        iAccountRepo.save(account);
+
+    }
+
 }

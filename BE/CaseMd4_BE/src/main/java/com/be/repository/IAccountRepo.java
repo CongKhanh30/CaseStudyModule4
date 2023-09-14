@@ -13,6 +13,13 @@ public interface IAccountRepo extends PagingAndSortingRepository<Account, Intege
     @Query(value = "select a from Account a where a.username like concat('%',:name,'%')")
     List<Account> findAllByUsernameHQL(@Param("name") String username);
 
+    @Query("SELECT a from Account a WHERE a.email = ?1")
+    Account findByEmail(String email);
+
     Account findByUsername(String username);
     Account findById(int id);
+
+    Account findByResetPasswordToken(String token);
+
+
 }

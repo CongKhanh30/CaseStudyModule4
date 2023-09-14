@@ -23,9 +23,14 @@ public class Account {
     private String phoneNumber;
     private String email;
 
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+
     @ManyToOne
     private Role role;
     public int getYearFromDateOfBirth() {
         return this.dateOfBirth.getYear();
     }
+
+
 }
